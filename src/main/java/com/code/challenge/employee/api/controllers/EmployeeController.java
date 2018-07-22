@@ -1,7 +1,11 @@
 package com.code.challenge.employee.api.controllers;
 
+import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -9,6 +13,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.code.challenge.employee.api.dao.EmployeeRepository;
+import com.code.challenge.employee.api.model.Employee;
+import com.code.challenge.employee.api.model.Hobby;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -23,6 +32,9 @@ import io.swagger.annotations.Tag;
 @SwaggerDefinition(tags = { @Tag(name = "Employee Rest API", description = "Employee API ­ Coding Challenge") })
 public class EmployeeController {
 
+	@Autowired
+	private EmployeeRepository employeeRepository;
+
 	@ApiOperation(value = "Create an employee")
 	@ApiResponses(value = { @ApiResponse(code = 201, message = "Employee was created successfully"),
 			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
@@ -34,6 +46,18 @@ public class EmployeeController {
 			@ApiParam(value = "Full name (first and last name)", required = true) @RequestParam("fullName") String fullName,
 			@ApiParam(value = "Birthday  YYYY­-MM­-DD)", required = false) @RequestParam("birthday") String birthday,
 			@ApiParam(value = "List of hobbies (soccer, music, etc)", required = false) @RequestParam("hobbies") List<String> hobbies) {
+
+		// TODO add validation for email and birthday
+
+		Employee employee = new Employee(fullName, email, LocalDate.parse(birthday));
+		Set<Hobby> hobbySet = new HashSet<>();
+		hobbies.stream().forEach(e -> hobbySet.add(new Hobby(e, employee)));
+
+		employee.setHobbies(hobbySet);
+		Employee employeeDB = employeeRepository.save(employee);
+		if (employeeDB != null)
+			return ResponseEntity.status(201).body(employeeDB.getUuid().toString() + " was created successfully");
+
 		return null;
 	}
 
@@ -47,8 +71,7 @@ public class EmployeeController {
 			@ApiParam(value = "How many employees to return at once; 1000 maximum.", defaultValue = "1000", allowableValues = "range[1, 1000]") @RequestParam("pageSize") int pageSize,
 			@ApiParam(value = "The page of the result set.", defaultValue = "1", allowableValues = "range[1, 1000]") @RequestParam("pageNumber") String pageNumber,
 			Model model) {
-
-		return ResponseEntity.ok(null);
+		return ResponseEntity.ok(employeeRepository.findAll());
 	}
 
 	@ApiOperation(value = "Find an employee by uuid")
