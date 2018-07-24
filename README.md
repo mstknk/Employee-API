@@ -60,13 +60,14 @@ mvn spring-boot:run
 ```
 The application will start on port `8080` so you can send a sample request to `http://localhost:8080/swagger-ui.html` to see Employee Rest API endpoints .
 
+![image](https://github.com/mstknk/Employee-API/blob/master/src/main/resources/images/Screen_Shot_1.png)
+
+
  ## Run Test Cases 
  
-Go to project folder  ~/src/test/resources/docker/docker-postgresql 
- ```
- docker-compose up -d postgres
- ```
-you can also use existing postgresql Server , just need to modify  `application-dev.properties` 
+ !! You must have a database named "employeetestdb" !!
+ 
+if you already have an up and running Postgresql Server , just execute the following script 
  
    ----
     CREATE DATABASE employeetestdb
@@ -83,10 +84,20 @@ you can also use existing postgresql Server , just need to modify  `application-
 mvn test
  ```
  
+ ## The Build Project
  
+  ```
+mvn clean package
+ ```
+ 
+if you don't have a running server postgresql server that 
+go to project folder  ~/src/test/resources/docker/docker-postgresql 
+
+ ```
+ docker-compose up -d postgres
+ ```
 
 
-![image](https://github.com/mstknk/Employee-API/blob/master/src/main/resources/images/Screen_Shot_1.png)
 
 
 ### Api Endpoints
