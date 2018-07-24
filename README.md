@@ -67,7 +67,7 @@ The application will start on port `8080` so you can send a sample request to `h
  
  !! You must have a database named "employeetestdb" !!
  
-if you already have an up and running Postgresql Server , just execute the following script 
+if you already have an up and running Postgresql Server , just execute the following SQL create query 
  
    ----
     CREATE DATABASE employeetestdb
@@ -79,6 +79,13 @@ if you already have an up and running Postgresql Server , just execute the follo
     TABLESPACE = pg_default
     CONNECTION LIMIT = -1;
   ----
+  
+  if you don't have a running server postgresql server that 
+go to project folder  ~/src/test/resources/docker/docker-postgresql 
+(before run docker-compose for testing just make sure you don't have running postgresql instance because postgresql container cannot start it exposes the same port number 5432 )
+ ```
+ docker-compose up -d postgres
+ ```
  
  ```
 mvn test
@@ -90,15 +97,6 @@ mvn test
 mvn clean package
  ```
  
-if you don't have a running server postgresql server that 
-go to project folder  ~/src/test/resources/docker/docker-postgresql 
-
- ```
- docker-compose up -d postgres
- ```
-
-
-
 
 ### Api Endpoints
 
