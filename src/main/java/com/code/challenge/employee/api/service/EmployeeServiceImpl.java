@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,15 +15,16 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
 import com.code.challenge.employee.api.dao.EmployeeRepository;
 import com.code.challenge.employee.api.model.Employee;
 import com.code.challenge.employee.api.model.Hobby;
 import com.code.challenge.employee.api.responses.ApiResult;
-import com.code.challenge.employee.api.utils.EmployeeValdation;
+import com.code.challenge.employee.api.utils.EmployeeValidation;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
-	private static final Logger LOGGER = LoggerFactory.getLogger(EmployeeServiceImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger(EmployeeServiceImpl.class);
 
 	@Autowired
 	private EmployeeRepository employeeRepository;
@@ -33,13 +35,15 @@ public class EmployeeServiceImpl implements EmployeeService {
 	@Override
 	public ResponseEntity getEmployees(int pageNumber, int pageSize) {
 		String calledService = "list all employees";
-		EmployeeValdation employeeValdation = new EmployeeValdation(calledService);
+		EmployeeValidation employeeValdation = new EmployeeValidation(calledService);
 		String nextPageUrl = null;
 		String previousPageUrl = null;
 
 		Page<Employee> emloyeesPage = employeeRepository.findAll(PageRequest.of(pageNumber, pageSize));
 		int totalCount = (int) emloyeesPage.getTotalElements();
 		int pagetotal = (int) (totalCount / pageSize) + 1;
+		logger.info("pageNumber > " + pageNumber + " " + calledService + " total count " + totalCount + " pages="
+				+ pagetotal);
 		if (pageNumber + 1 < pagetotal) {
 			nextPageUrl = restEndPoint + "&pageSize=" + pageSize + "&pageNumber=" + (pageNumber + 1);
 		}
@@ -61,7 +65,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 		/** employee validations notnull valid email and birthday */
 
 		String calledService = "create an employee";
-		EmployeeValdation employeeValdation = new EmployeeValdation(calledService);
+		EmployeeValidation employeeValdation = new EmployeeValidation(calledService);
 		employeeValdation.ValidInput(fullName, email, birthday);
 
 		if (!employeeValdation.isValid())
@@ -78,6 +82,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 		employee.setHobbies(hobbySet);
 		employeeDB = employeeRepository.save(employee);
+		logger.info(employeeDB.toString() + " was created successfully");
 		if (employeeDB != null)
 			return ResponseEntity.status(201).body(employeeValdation.getNewApiResponse(HttpStatus.CREATED, 201,
 					calledService, employeeDB.getUuid().toString() + " was created successfully"));
@@ -90,7 +95,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 		/** employee validations invalid uuid , Employee not found */
 
 		String calledService = "get employee by uuid";
-		EmployeeValdation employeeValdation = new EmployeeValdation(calledService);
+		EmployeeValidation employeeValdation = new EmployeeValidation(calledService);
 		employeeValdation.valideUUID(uuid);
 		if (!employeeValdation.isValid())
 			return employeeValdation.getResponseEntity();
@@ -100,6 +105,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 					calledService, uuid + " Employee not found"));
 
 		/***********/
+		logger.info(employee.toString() + "  found");
 		return ResponseEntity.status(302)
 				.body(employeeValdation.getNewApiResponse(HttpStatus.FOUND, 302, calledService, employee));
 	}
@@ -110,7 +116,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 		/** employee validations invalid uuid , Employee not found */
 
 		String calledService = "delete employee by uuid";
-		EmployeeValdation employeeValdation = new EmployeeValdation(calledService);
+		EmployeeValidation employeeValdation = new EmployeeValidation(calledService);
 		employeeValdation.valideUUID(uuid);
 		if (!employeeValdation.isValid())
 			return employeeValdation.getResponseEntity();
@@ -122,6 +128,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 		/***********/
 
 		employeeRepository.delete(employee);
+
+		logger.info(employee.toString() + "  was deleted successfully");
+
 		return ResponseEntity.status(200).body(employeeValdation.getNewApiResponse(HttpStatus.OK, 200, calledService,
 				uuid + " was deleted successfully"));
 	}
@@ -132,7 +141,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 		/** employee validations invalid uuid , Employee not found */
 
 		String calledService = "update employee by uuid";
-		EmployeeValdation employeeValdation = new EmployeeValdation(calledService);
+		EmployeeValidation employeeValdation = new EmployeeValidation(calledService);
 		employeeValdation.valideUUID(uuid);
 		if (!employeeValdation.isValid())
 			return employeeValdation.getResponseEntity();
@@ -145,7 +154,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 		employee.setEmail(email);
 		employee.setFullName(fullName);
 		employee.setBirthday(LocalDate.parse(birthday));
-		employeeRepository.save(employee);
+		employee = employeeRepository.save(employee);
+		logger.info(employee.toString() + "  was update successfully");
+
 		return ResponseEntity.status(200).body(employeeValdation.getNewApiResponse(HttpStatus.OK, 200, calledService,
 				uuid + " was update successfully"));
 	}
