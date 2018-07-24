@@ -86,7 +86,7 @@ mvn test
  
 
 
-![image](https://github.com/employee-API/blob/master/src/main/resources/images/Screen_Shot_1.png)
+![image](https://github.com/mstknk/Employee-API/blob/master/src/main/resources/images/Screen_Shot_1.png)
 
 
 ### Api Endpoints
@@ -260,4 +260,4 @@ mvn test
  ```
 ### Database Diagram
 
-![image](https://github.com/employee-API/blob/master/src/main/resources/images/Screen_Shot_DB.png)
+![image](https://github.com/mstknk/Employee-API/blob/master/src/main/resources/images/Screen_Shot_DB.png)
