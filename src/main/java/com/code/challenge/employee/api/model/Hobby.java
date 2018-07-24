@@ -19,9 +19,11 @@ public class Hobby {
 
 	@Id
 	@GeneratedValue
+	@JsonIgnore
 	private Long id;
 
 	@Column(name = "hobby_name")
+	@JsonProperty(value = "hobby_name")
 	private String hobbyName;
 
 	@ManyToOne

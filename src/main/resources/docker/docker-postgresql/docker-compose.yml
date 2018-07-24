@@ -1,0 +1,12 @@
+ postgres:
+    image: postgres:latest
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      PGDATA: /data/postgres
+    volumes:
+          - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "55432:5432"
+    restart: unless-stopped

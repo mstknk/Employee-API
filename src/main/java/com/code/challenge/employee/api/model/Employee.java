@@ -12,7 +12,8 @@ import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
@@ -25,18 +26,20 @@ public class Employee {
 	private UUID uuid;
 
 	@Column(name = "full_name")
+	@NotNull(message = "full Name can not be null ")
+	@JsonProperty(value = "full_name")
 	private String fullName;
 
 	@Column(name = "email", unique = true)
+	@Email(message = "invalid email address")
 	private String email;
 
 	@Column(name = "birthday")
-	@JsonProperty
 	private LocalDate birthday;
 
-	@OneToMany(mappedBy = "employee", cascade = CascadeType.ALL,fetch=FetchType.EAGER)
+	@OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JsonProperty
-	private Set<Hobby> hobbies ;
+	private Set<Hobby> hobbies;
 
 	public Employee() {
 	}
@@ -44,7 +47,7 @@ public class Employee {
 	public Employee(String fullName, String email, LocalDate birthday) {
 		this.fullName = fullName;
 		this.email = email;
-		this.birthday=birthday;
+		this.birthday = birthday;
 
 	}
 
@@ -64,7 +67,6 @@ public class Employee {
 		this.email = email;
 	}
 
-
 	public UUID getUuid() {
 		return uuid;
 	}
@@ -77,10 +79,6 @@ public class Employee {
 		this.hobbies = hobbies;
 	}
 
-	public void setUuid(UUID uuid) {
-		this.uuid = uuid;
-	}
-
 	public LocalDate getBirthday() {
 		return birthday;
 	}
@@ -89,5 +87,10 @@ public class Employee {
 		this.birthday = birthday;
 	}
 
+	@Override
+	public String toString() {
+		return "Employee [uuid=" + uuid + ", fullName=" + fullName + ", email=" + email + ", birthday=" + birthday
+				+ ", hobbies=" + hobbies + "]";
+	}
 
 }
